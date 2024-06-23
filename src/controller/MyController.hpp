@@ -1,5 +1,5 @@
-#ifndef MyController_hpp
-#define MyController_hpp
+#ifndef MY_CONTROLLER_HPP
+#define MY_CONTROLLER_HPP
 
 #include "oatpp/web/server/api/ApiController.hpp"
 #include "oatpp/utils/Conversion.hpp"
@@ -35,8 +35,9 @@ public:
   ENDPOINT("POST", "/entries", createEntry,
            BODY_DTO(Object<EntryDto>, dto)) {
     entryService.validate(dto);
-    auto response = createDtoResponse(Status::CODE_201, entryService.createEntry(dto));
-    response->putHeader("Content-Location", "/entry/" + oatpp::utils::Conversion::int32ToStr(dto->id));
+    oatpp::Object<EntryDto> created = entryService.createEntry(dto);
+    auto response = createDtoResponse(Status::CODE_201, created);
+    response->putHeader("Content-Location", "/entry/" + oatpp::utils::Conversion::int32ToStr(created->id));
 
     return response;
   }
@@ -67,4 +68,4 @@ public:
 
 #include OATPP_CODEGEN_END(ApiController) //<-- End Codegen
 
-#endif /* MyController_hpp */
+#endif /* MY_CONTROLLER_HPP */

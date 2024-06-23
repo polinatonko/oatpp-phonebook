@@ -1,5 +1,5 @@
-#ifndef DTOs_hpp
-#define DTOs_hpp
+#ifndef DTOS_HPP
+#define DTOS_HPP
 
 #include "oatpp/macro/codegen.hpp"
 #include "oatpp/Types.hpp"
@@ -27,7 +27,7 @@ class PageDto : public oatpp::DTO {
   
   DTO_INIT(PageDto, DTO)
   
-  DTO_FIELD(Int32, offset);
+  DTO_FIELD(Int32, pageNumber);
   DTO_FIELD(Int32, limit);
   DTO_FIELD(Vector<T>, items);
   
@@ -45,4 +45,4 @@ class StatusDto : public oatpp::DTO {
 
 #include OATPP_CODEGEN_END(DTO)
 
-#endif /* DTOs_hpp */
+#endif /* DTOS_HPP */

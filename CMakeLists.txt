@@ -8,23 +8,38 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_library(${project_name}-lib
         src/AppComponent.hpp
+        src/DbComponent.hpp
         src/controller/MyController.cpp
         src/controller/MyController.hpp
         src/dto/DTOs.hpp
         src/service/EntryService.hpp
         src/service/EntryService.cpp
+        src/db/EntryDb.hpp
 )
 
 ## link libs
 
+find_package(Threads REQUIRED)
 find_package(oatpp 1.4.0 REQUIRED)
+find_package(oatpp-sqlite 1.4.0 REQUIRED)
 
 target_link_libraries(${project_name}-lib
         PUBLIC oatpp::oatpp
         PUBLIC oatpp::oatpp-test
+        PUBLIC oatpp::oatpp-sqlite
 )
 
 target_include_directories(${project_name}-lib PUBLIC src)
+
+add_definitions(
+        ## SQLite database file
+        -DDATABASE_FILE="${CMAKE_CURRENT_SOURCE_DIR}/db.sqlite"
+        ## SQLite database test file
+        -DTESTDATABASE_FILE="${CMAKE_CURRENT_SOURCE_DIR}/test-db.sqlite"
+
+        ## Path to database migration scripts
+        -DDATABASE_MIGRATIONS="${CMAKE_CURRENT_SOURCE_DIR}/sql"
+)
 
 ## add executables
 

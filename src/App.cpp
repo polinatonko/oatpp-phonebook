@@ -1,5 +1,6 @@
 #include "./controller/MyController.hpp"
 #include "./AppComponent.hpp"
+#include "./DbComponent.hpp"
 
 #include "oatpp/network/Server.hpp"
 
@@ -30,6 +31,10 @@ void run() {
 
   /* Run server */
   server.run();
+
+  /* stop db connection pool */
+  OATPP_COMPONENT(std::shared_ptr<oatpp::provider::Provider<oatpp::sqlite::Connection>>, dbConnectionProvider);
+  dbConnectionProvider->stop();
   
 }
 

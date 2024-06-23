@@ -1,5 +1,5 @@
-#ifndef AppComponent_hpp
-#define AppComponent_hpp
+#ifndef APP_COMPONENT_HPP
+#define APP_COMPONENT_HPP
 
 #include "oatpp/web/server/HttpConnectionHandler.hpp"
 #include "oatpp/web/mime/ContentMappers.hpp"
@@ -9,13 +9,19 @@
 
 #include "oatpp/macro/component.hpp"
 
+#include "DbComponent.hpp"
+
 /**
  *  Class which creates and holds Application components and registers components in oatpp::base::Environment
  *  Order of components initialization is from top to bottom
  */
 class AppComponent {
 public:
-  
+  /**
+   * Db component
+   */
+  DbComponent dbComponent;
+
   /**
    *  Create ConnectionProvider component which listens on the port
    */
@@ -55,4 +61,4 @@ public:
 
 };
 
-#endif /* AppComponent_hpp */
+#endif /* APP_COMPONENT_HPP */

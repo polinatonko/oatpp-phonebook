@@ -1,72 +1,58 @@
 #include "EntryService.hpp"
 
-EntryService::EntryService() {
-    init();
-}
-
-void EntryService::init() {
-    auto obj = oatpp::Object<EntryDto>::createShared();
-    obj->id = 1;
-    obj->phone = "+375296667788";
-    obj->name = "Ivan";
-    obj->address = "Minsk";
-    entries.insert(obj);
-}
 
 void EntryService::validate(const oatpp::Object<EntryDto> &dto)
 {
     entryValidator.validate(dto);
-
-    OATPP_ASSERT_HTTP(getEntryById(dto->id) == nullptr, oatpp::web::protocol::http::Status::CODE_400, "Entry with such id already exist.");
 }
 
 oatpp::Object<EntryDto> EntryService::createEntry(const oatpp::Object<EntryDto>& dto) {
-    entries.insert(dto);
+    auto dbResult = entryDb->createEntry(dto);
+    OATPP_ASSERT_HTTP(dbResult->isSuccess(), Status::CODE_500, dbResult->getErrorMessage());
 
-    return dto;
+    auto entryId = oatpp::sqlite::Utils::getLastInsertRowId(dbResult->getConnection());
+    OATPP_LOGi("MyApp:EntryService", "Create entry id={}", entryId);
+
+    return getEntryById(entryId);
 }
 
-auto findById = [](const oatpp::Object<EntryDto>& dto, oatpp::Int32 id) {
-    return dto->id == id;
-};
-
 oatpp::Object<EntryDto> EntryService::updateEntry(const oatpp::Object<EntryDto>& dto) {
-    auto entry = getEntryById(dto->id);
-    entry->phone = dto->phone;
-    entry->name = dto->name;
-    entry->address = dto->address;
+    auto dbResult = entryDb->updateEntry(dto);
+    OATPP_ASSERT_HTTP(dbResult->isSuccess(), Status::CODE_500, dbResult->getErrorMessage());
+    OATPP_LOGi("MyApp:EntryService", "Update entry id={}", dto->id);
 
-    return entry;
+    return getEntryById(dto->id);
 }
 
 oatpp::Object<EntryDto> EntryService::getEntryById(const oatpp::Int32& id) {
-    v_int32 v_id = id.getValue(1);
-    auto it = std::find_if(entries.begin(), entries.end(), [v_id](const oatpp::Object<EntryDto> obj) {
-        return obj->id == v_id;
-    });
+    auto dbResult = entryDb->getEntryById(id);
+    OATPP_ASSERT_HTTP(dbResult->isSuccess(), Status::CODE_500, dbResult->getErrorMessage());
+    OATPP_ASSERT_HTTP(dbResult->hasMoreToFetch(), Status::CODE_404, "Entry not found");
 
-    return (it != entries.end()) ? *it : nullptr;
+    auto result = dbResult->fetch<oatpp::Vector<oatpp::Object<EntryDto>>>();
+    OATPP_ASSERT_HTTP(result->size() == 1, Status::CODE_500, "There are multiple entries with same id");
+    OATPP_LOGi("MyApp:EntryService", "Get entry id={}", id);
+
+    return result[0];
 }
 
 void EntryService::deleteEntryById(const oatpp::Int32& id) {
-    v_int32 v_id = id.getValue(1);
-    entries.erase(getEntryById(id));
+    OATPP_LOGi("My App", "Inside delete {}", id);
+    auto dbResult = entryDb->deleteEntry(id);
+    OATPP_ASSERT_HTTP(dbResult->isSuccess(), Status::CODE_500, dbResult->getErrorMessage());
+    OATPP_LOGi("MyApp:EntryService", "Delete entry id={}", id);
 }
 
-oatpp::Object<PageDto<oatpp::Object<EntryDto>>> EntryService::getEntries(const oatpp::Int32& offset, const oatpp::Int32& limit) {
-    auto it = entries.begin();
-    for (int i = 0; i < offset && it != entries.end(); ++i)
-        it++;
+oatpp::Object<PageDto<oatpp::Object<EntryDto>>> EntryService::getEntries(const oatpp::Int32& pageNumber, const oatpp::Int32& limit) {
+    oatpp::Int32 offset = (pageNumber - 1) * limit;
+    auto dbResult = entryDb->getEntries(limit, offset);
+    OATPP_ASSERT_HTTP(dbResult->isSuccess(), Status::CODE_500, dbResult->getErrorMessage());
 
+    auto result = dbResult->fetch<oatpp::Vector<oatpp::Object<EntryDto>>>();
     auto page = PageDto<oatpp::Object<EntryDto>>::createShared();
-    page->offset = offset;
     page->limit = limit;
-    page->items = oatpp::Vector<oatpp::Object<EntryDto>>::createShared();
-    
-    for (int i = 0; i < limit && it != entries.end(); ++i) {
-        page->items->push_back(*it);
-        it++;
-    }
+    page->pageNumber = pageNumber;
+    page->items = result;
 
     return page;
 }
