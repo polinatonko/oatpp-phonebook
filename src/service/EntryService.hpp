@@ -18,9 +18,9 @@ public:
     void validate(const oatpp::Object<EntryDto>& dto);
     oatpp::Object<EntryDto> createEntry(const oatpp::Object<EntryDto>& dto);
     oatpp::Object<EntryDto> updateEntry(const oatpp::Object<EntryDto>& dto);
-    oatpp::Object<EntryDto> getEntryById(const oatpp::Int32& id);
-    void deleteEntryById(const oatpp::Int32& id);
-    oatpp::Object<PageDto<oatpp::Object<EntryDto>>> getEntries(const oatpp::Int32& page, const oatpp::Int32& limit);
+    oatpp::Object<EntryDto> getEntryById(const oatpp::UInt32& id);
+    void deleteEntryById(const oatpp::UInt32& id);
+    oatpp::Object<PageDto<oatpp::Object<EntryDto>>> getEntries(const oatpp::UInt32& page, const oatpp::UInt32& limit);
 };
 
 #endif

@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD 17)
 add_library(${project_name}-lib
         src/AppComponent.hpp
         src/DbComponent.hpp
-        src/controller/MyController.cpp
+        src/SwaggerComponent.hpp
         src/controller/MyController.hpp
         src/dto/DTOs.hpp
         src/service/EntryService.hpp
@@ -22,18 +22,24 @@ add_library(${project_name}-lib
 find_package(Threads REQUIRED)
 find_package(oatpp 1.4.0 REQUIRED)
 find_package(oatpp-sqlite 1.4.0 REQUIRED)
+find_package(oatpp-swagger 1.4.0 REQUIRED)
 
 target_link_libraries(${project_name}-lib
         PUBLIC oatpp::oatpp
         PUBLIC oatpp::oatpp-test
         PUBLIC oatpp::oatpp-sqlite
+        PUBLIC oatpp::oatpp-swagger
 )
 
 target_include_directories(${project_name}-lib PUBLIC src)
 
 add_definitions(
+        ## define path to swagger-ui static resources folder
+        -DOATPP_SWAGGER_RES_PATH="${oatpp-swagger_INCLUDE_DIRS}/../bin/oatpp-swagger/res"
+
         ## SQLite database file
         -DDATABASE_FILE="${CMAKE_CURRENT_SOURCE_DIR}/db.sqlite"
+        
         ## SQLite database test file
         -DTESTDATABASE_FILE="${CMAKE_CURRENT_SOURCE_DIR}/test-db.sqlite"
 

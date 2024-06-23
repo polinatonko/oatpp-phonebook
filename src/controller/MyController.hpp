@@ -27,11 +27,28 @@ public:
   {}
 public:
 
+  ENDPOINT_INFO(getEntryById) {
+    info->summary = "Get one Entry by id";
+
+    info->addResponse<Object<EntryDto>>(Status::CODE_200, "application/json");
+    info->addResponse(Status::CODE_404, "application/json");
+    info->addResponse(Status::CODE_500, "application/json");
+
+    info->pathParams["id"].description = "Phone entry identifier";
+  }
   ENDPOINT("GET", "/entry/{id}", getEntryById,
-           PATH(Int32, id)) {
+           PATH(UInt32, id)) {
     return createDtoResponse(Status::CODE_200, entryService.getEntryById(id));
   }
 
+  ENDPOINT_INFO(createEntry) {
+    info->summary = "Create Entry";
+
+    info->addConsumes<Object<EntryDto>>("application/json");
+
+    info->addResponse<Object<EntryDto>>(Status::CODE_201, "application/json");
+    info->addResponse(Status::CODE_500, "application/json");
+  }
   ENDPOINT("POST", "/entries", createEntry,
            BODY_DTO(Object<EntryDto>, dto)) {
     entryService.validate(dto);
@@ -42,6 +59,16 @@ public:
     return response;
   }
 
+  ENDPOINT_INFO(updateEntry) {
+    info->summary = "Update Entry by id";
+
+    info->addConsumes<Object<EntryDto>>("application/json");
+
+    info->addResponse<Object<EntryDto>>(Status::CODE_200, "application/json");
+    info->addResponse(Status::CODE_500, "application/json");
+
+    info->pathParams["id"].description = "Phone entry identifier";
+  }
   ENDPOINT("PUT", "/entry", updateEntry,
            BODY_DTO(Object<EntryDto>, dto)) {
     entryService.validate(dto);
@@ -51,17 +78,34 @@ public:
     return createDtoResponse(Status::CODE_200, entryService.updateEntry(dto));
   }
 
+  ENDPOINT_INFO(deleteEntry) {
+    info->summary = "Delete Entry by id";
+
+    info->addResponse(Status::CODE_204);
+    info->addResponse(Status::CODE_500, "application/json");
+
+    info->pathParams["id"].description = "Phone entry identifier";
+  }
   ENDPOINT("DELETE", "/entry/{id}", deleteEntry,
-           PATH(Int32, id)) {
+           PATH(UInt32, id)) {
     entryService.deleteEntryById(id);
 
     return createResponse(Status::CODE_204);
   }
   
-  ENDPOINT("GET", "/entries/{offset}/{limit}", getAllEntries,
-           PATH(Int32, offset),
-           PATH(Int32, limit)) {
-    return createDtoResponse(Status::CODE_200, entryService.getEntries(offset, limit));
+  ENDPOINT_INFO(getAllEntries) {
+    info->summary = "Get multiple entries";
+
+    info->addResponse<Object<PageDto<Object<EntryDto>>>>(Status::CODE_200, "application/json");
+    info->addResponse(Status::CODE_500, "application/json");
+
+    info->pathParams["page"].description = "Page number (positive integer)";
+    info->pathParams["limit"].description = "Entries number per page";
+  }
+  ENDPOINT("GET", "/entries/{page}/{limit}", getAllEntries,
+           PATH(UInt32, page),
+           PATH(UInt32, limit)) {
+    return createDtoResponse(Status::CODE_200, entryService.getEntries(page, limit));
   }
   
 };

@@ -24,7 +24,7 @@ oatpp::Object<EntryDto> EntryService::updateEntry(const oatpp::Object<EntryDto>&
     return getEntryById(dto->id);
 }
 
-oatpp::Object<EntryDto> EntryService::getEntryById(const oatpp::Int32& id) {
+oatpp::Object<EntryDto> EntryService::getEntryById(const oatpp::UInt32& id) {
     auto dbResult = entryDb->getEntryById(id);
     OATPP_ASSERT_HTTP(dbResult->isSuccess(), Status::CODE_500, dbResult->getErrorMessage());
     OATPP_ASSERT_HTTP(dbResult->hasMoreToFetch(), Status::CODE_404, "Entry not found");
@@ -36,15 +36,15 @@ oatpp::Object<EntryDto> EntryService::getEntryById(const oatpp::Int32& id) {
     return result[0];
 }
 
-void EntryService::deleteEntryById(const oatpp::Int32& id) {
+void EntryService::deleteEntryById(const oatpp::UInt32& id) {
     OATPP_LOGi("My App", "Inside delete {}", id);
     auto dbResult = entryDb->deleteEntry(id);
     OATPP_ASSERT_HTTP(dbResult->isSuccess(), Status::CODE_500, dbResult->getErrorMessage());
     OATPP_LOGi("MyApp:EntryService", "Delete entry id={}", id);
 }
 
-oatpp::Object<PageDto<oatpp::Object<EntryDto>>> EntryService::getEntries(const oatpp::Int32& pageNumber, const oatpp::Int32& limit) {
-    oatpp::Int32 offset = (pageNumber - 1) * limit;
+oatpp::Object<PageDto<oatpp::Object<EntryDto>>> EntryService::getEntries(const oatpp::UInt32& pageNumber, const oatpp::UInt32& limit) {
+    oatpp::UInt32 offset = (pageNumber - 1) * limit;
     auto dbResult = entryDb->getEntries(limit, offset);
     OATPP_ASSERT_HTTP(dbResult->isSuccess(), Status::CODE_500, dbResult->getErrorMessage());
 

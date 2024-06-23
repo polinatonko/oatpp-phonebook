@@ -10,6 +10,7 @@
 #include "oatpp/macro/component.hpp"
 
 #include "DbComponent.hpp"
+#include "SwaggerComponent.hpp"
 
 /**
  *  Class which creates and holds Application components and registers components in oatpp::base::Environment
@@ -21,6 +22,11 @@ public:
    * Db component
    */
   DbComponent dbComponent;
+
+  /**
+   * Swagger component
+   */
+  SwaggerComponent swaggerComponent;
 
   /**
    *  Create ConnectionProvider component which listens on the port

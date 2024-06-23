@@ -40,16 +40,16 @@ public:
 
     QUERY(getEntryById,
         "SELECT * FROM EntryDb WHERE id=:id;",
-        PARAM(oatpp::Int32, id))
+        PARAM(oatpp::UInt32, id))
         
     QUERY(deleteEntry,
         "DELETE FROM EntryDb WHERE id=:id;",
-        PARAM(oatpp::Int32, id))
+        PARAM(oatpp::UInt32, id))
 
     QUERY(getEntries,
         "SELECT * FROM EntryDb LIMIT :limit OFFSET :offset;",
-        PARAM(oatpp::Int32, limit),
-        PARAM(oatpp::Int32, offset))
+        PARAM(oatpp::UInt32, limit),
+        PARAM(oatpp::UInt32, offset))
     
 };
 
