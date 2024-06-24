@@ -3,7 +3,7 @@
 #include "./DbComponent.hpp"
 
 #include "oatpp/network/Server.hpp"
-#include "oatpp-swagger/Controller.hpp"
+#include "oatpp-swagger/AsyncController.hpp"
 
 #include <iostream>
 
@@ -19,7 +19,7 @@ void run() {
   oatpp::web::server::api::Endpoints docEndpoints;
   docEndpoints.append(router->addController(std::make_shared<MyController>())->getEndpoints());
 
-  router->addController(oatpp::swagger::Controller::createShared(docEndpoints));
+  router->addController(oatpp::swagger::AsyncController::createShared(docEndpoints));
   
   /* Get connection handler component */
   OATPP_COMPONENT(std::shared_ptr<oatpp::network::ConnectionHandler>, connectionHandler);

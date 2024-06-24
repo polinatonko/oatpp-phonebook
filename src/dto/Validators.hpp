@@ -1,10 +1,12 @@
-#ifndef Validators_hpp
-#define Validators_hpp
+#ifndef VALIDATORS_HPP
+#define VALIDATORS_HPP
 
 #include <regex>
 
 #include "oatpp/web/protocol/http/outgoing/Response.hpp"
 #include "oatpp/web/protocol/http/Http.hpp"
+
+#include "errorHandler/Exception.hpp"
 
 typedef oatpp::web::protocol::http::outgoing::Response OutgoingResponse;
 typedef oatpp::web::protocol::http::Status Status;
@@ -14,7 +16,6 @@ namespace Validators {
     class EntryValidator {
         static inline std::string phonePattern = "\\+375\\d{9}";
 
-    public:
         static void nonNull(const oatpp::Void& polymorph) {
             auto dispatcher = static_cast<const oatpp::data::type::__class::AbstractObject::PolymorphicDispatcher*>(polymorph.getValueType()->polymorphicDispatcher);
             auto fields = dispatcher->getProperties()->getList();
@@ -25,18 +26,24 @@ namespace Validators {
                 if (field->name == "id")
                     continue;
 
-                auto value = field->get(dto);
-
-                OATPP_ASSERT_HTTP(value, Status::CODE_400, oatpp::String("Field '" + field->name + "' is null."));
+                if (!field->get(dto)) {
+                    char* message = new char[strlen(field->name.c_str()) + 26];
+                    sprintf(message, "Field '%s' shouldn't be null", field->name.c_str());
+                    throw ValidationException(message);
+                }
             }
         }
 
-        static void validate(const oatpp::Object<EntryDto>& dto) {
+    public:
+        
+        static void validate(const oatpp::Object<EntryRequestDto>& dto) {
             nonNull(dto);
-            
-            OATPP_ASSERT_HTTP(std::regex_match(dto->phone->c_str(), std::regex(phonePattern)), Status::CODE_400, "Phone should be in '+375XXXXXXXXX' format.");
+
+            if (!std::regex_match(dto->phone->c_str(), std::regex(phonePattern))) {
+                throw ValidationException("Phone should be in '+375XXXXXXXXX' format.");
+            }
         }
     };
 }
 
-#endif
+#endif /* VALIDATORS_HPP */

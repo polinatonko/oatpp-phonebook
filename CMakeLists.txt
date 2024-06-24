@@ -12,9 +12,13 @@ add_library(${project_name}-lib
         src/SwaggerComponent.hpp
         src/controller/MyController.hpp
         src/dto/DTOs.hpp
+        src/dto/Validators.hpp
         src/service/EntryService.hpp
         src/service/EntryService.cpp
         src/db/EntryDb.hpp
+        src/errorHandler/ErrorHandler.hpp 
+        src/errorHandler/ErrorHandler.cpp
+        src/errorHandler/Exception.hpp
 )
 
 ## link libs

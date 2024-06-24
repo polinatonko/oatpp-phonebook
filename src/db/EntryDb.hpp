@@ -4,8 +4,6 @@
 #include "oatpp-sqlite/orm.hpp"
 #include "oatpp/base/Log.hpp"
 
-#include "dto/DTOs.hpp"
-
 #include OATPP_CODEGEN_BEGIN(DbClient)
 
 class EntryDb : public oatpp::orm::DbClient {
@@ -26,7 +24,7 @@ public:
         "INSERT INTO EntryDb"
         "(name, phone, address) VALUES "
         "(:entry.name, :entry.phone, :entry.address);",
-        PARAM(oatpp::Object<EntryDto>, entry))
+        PARAM(oatpp::Object<EntryRequestDto>, entry))
 
     QUERY(updateEntry,
         "UPDATE EntryDb "
@@ -35,21 +33,22 @@ public:
         "phone=:entry.phone,"
         "address=:entry.address "
         "WHERE "
-        "id=:entry.id;",
-        PARAM(oatpp::Object<EntryDto>, entry))
+        "id=:id;",
+        PARAM(oatpp::Int32, id),
+        PARAM(oatpp::Object<EntryRequestDto>, entry))
 
     QUERY(getEntryById,
         "SELECT * FROM EntryDb WHERE id=:id;",
-        PARAM(oatpp::UInt32, id))
+        PARAM(oatpp::Int32, id))
         
     QUERY(deleteEntry,
         "DELETE FROM EntryDb WHERE id=:id;",
-        PARAM(oatpp::UInt32, id))
+        PARAM(oatpp::Int32, id))
 
     QUERY(getEntries,
         "SELECT * FROM EntryDb LIMIT :limit OFFSET :offset;",
-        PARAM(oatpp::UInt32, limit),
-        PARAM(oatpp::UInt32, offset))
+        PARAM(oatpp::Int32, limit),
+        PARAM(oatpp::Int32, offset))
     
 };
 

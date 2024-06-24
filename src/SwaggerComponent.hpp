@@ -3,11 +3,11 @@
 
 #include "oatpp-swagger/Model.hpp"
 #include "oatpp-swagger/Resources.hpp"
+#include "oatpp-swagger/ControllerPaths.hpp"
 #include "oatpp/macro/component.hpp"
 
 /**
- *  Swagger ui is served at
- *  http://localhost:8000/swagger/ui
+ *  Configure Swagger info and resources paths
  */
 class SwaggerComponent {
 public:

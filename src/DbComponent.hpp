@@ -1,5 +1,5 @@
-#ifndef DbComponent_hpp
-#define DbComponent_hpp
+#ifndef DB_COMPONENT_HPP
+#define DB_COMPONENT_HPP
 
 #include "oatpp/macro/component.hpp"
 
@@ -11,7 +11,6 @@ public:
     /**
      * Create db connection provider component
      */
-
     OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::provider::Provider<oatpp::sqlite::Connection>>, connectionProvider) ([] {
         
         /* Create database-specific ConnectionProvider */
@@ -26,10 +25,9 @@ public:
     /**
      * Create database client
      */
-
     OATPP_CREATE_COMPONENT(std::shared_ptr<EntryDb>, entryDb) ([] {
+        
         /* Get database ConnectionProvider component */
-
         OATPP_COMPONENT(std::shared_ptr<oatpp::provider::Provider<oatpp::sqlite::Connection>>, connectionProvider);
         
         /* Create db executor */
@@ -41,4 +39,4 @@ public:
     } ());
 };
 
-#endif
+#endif /* DB_COMPONENT_HPP */
