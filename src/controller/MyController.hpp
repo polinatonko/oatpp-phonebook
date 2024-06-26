@@ -4,7 +4,6 @@
 #include "oatpp/web/server/api/ApiController.hpp"
 #include "oatpp/utils/Conversion.hpp"
 
-#include "dto/DTOs.hpp"
 #include "service/EntryService.hpp"
 
 #include OATPP_CODEGEN_BEGIN(ApiController) //<-- Begin Codegen
@@ -24,9 +23,8 @@ public:
   MyController(OATPP_COMPONENT(std::shared_ptr<oatpp::web::mime::ContentMappers>, apiContentMappers))
     : oatpp::web::server::api::ApiController(apiContentMappers)
   {}
-public:
 
-  ENDPOINT_INFO(getEntryById) {
+  ENDPOINT_INFO(getEntryByIdAsync) {
     info->summary = "Get one Entry by given identifier";
 
     info->pathParams.add<oatpp::Int32>("id").required = true;
@@ -37,12 +35,13 @@ public:
     info->addResponse<Object<StatusDto>>(Status::CODE_404, "application/json");
     info->addResponse<Object<StatusDto>>(Status::CODE_500, "application/json");
   }
-  ENDPOINT_ASYNC("GET", "/entry/{id}", getEntryById) {
+  ENDPOINT_ASYNC("GET", "/entry/{id}", getEntryByIdAsync) {
 
-    ENDPOINT_ASYNC_INIT(getEntryById);
+    ENDPOINT_ASYNC_INIT(getEntryByIdAsync);
 
     Action act() override {
-      oatpp::Int32 id = atoi(request->getPathVariable("id")->c_str());
+      oatpp::Int32 id = oatpp::utils::Conversion::strToInt32(request->getPathVariable("id")->c_str());
+
       auto entry = controller->entryService.getEntryById(id);
       OATPP_ASSERT_HTTP(entry, Status::CODE_404, "Entry with such identifier not found");
 
@@ -50,7 +49,7 @@ public:
     }
   };
 
-  ENDPOINT_INFO(createEntry) {
+  ENDPOINT_INFO(createEntryAsync) {
     info->summary = "Create new Entry";
 
     info->addConsumes<Object<EntryRequestDto>>("application/json");
@@ -59,13 +58,13 @@ public:
     info->addResponse<Object<StatusDto>>(Status::CODE_400, "application/json");
     info->addResponse<Object<StatusDto>>(Status::CODE_500, "application/json");
   }
-  ENDPOINT_ASYNC("POST", "/entries", createEntry) {
+  ENDPOINT_ASYNC("POST", "/entries", createEntryAsync) {
 
-    ENDPOINT_ASYNC_INIT(createEntry);
+    ENDPOINT_ASYNC_INIT(createEntryAsync);
 
     Action act() override {
       return request->readBodyToDtoAsync<Object<EntryRequestDto>>(controller->getContentMappers()->getDefaultMapper())
-                      .callbackTo(&createEntry::createEntryResponse);
+                      .callbackTo(&createEntryAsync::createEntryResponse);
     }
 
     Action createEntryResponse(const Object<EntryRequestDto>& dto) {
@@ -79,7 +78,7 @@ public:
     }
   };
 
-  ENDPOINT_INFO(updateEntry) {
+  ENDPOINT_INFO(updateEntryAsync) {
     info->summary = "Update existing Entry by given identifier";
 
     info->pathParams.add<oatpp::Int32>("id").required = true;
@@ -93,9 +92,9 @@ public:
     info->addResponse<Object<StatusDto>>(Status::CODE_404, "application/json");
     info->addResponse<Object<StatusDto>>(Status::CODE_500, "application/json");
   }
-  ENDPOINT_ASYNC("PUT", "/entry/{id}", updateEntry) {
+  ENDPOINT_ASYNC("PUT", "/entry/{id}", updateEntryAsync) {
 
-    ENDPOINT_ASYNC_INIT(updateEntry);
+    ENDPOINT_ASYNC_INIT(updateEntryAsync);
 
     Int32 id;
 
@@ -103,7 +102,7 @@ public:
       id = oatpp::utils::Conversion::strToInt32(request->getPathVariable("id")->c_str());
 
       return request->readBodyToDtoAsync<Object<EntryRequestDto>>(controller->getContentMappers()->getDefaultMapper())
-                                                          .callbackTo(&updateEntry::updateEntryResponse);
+                      .callbackTo(&updateEntryAsync::updateEntryResponse);
     } 
 
     Action updateEntryResponse(const Object<EntryRequestDto>& dto) {
@@ -115,7 +114,7 @@ public:
     }
   };
 
-  ENDPOINT_INFO(deleteEntry) {
+  ENDPOINT_INFO(deleteEntryAsync) {
     info->summary = "Delete Entry by given identifier";
 
     info->pathParams.add<oatpp::Int32>("id").required = true;
@@ -125,19 +124,20 @@ public:
     info->addResponse(Status::CODE_204).description = "Request was successfully processed";
     info->addResponse<Object<StatusDto>>(Status::CODE_500, "application/json");
   }
-  ENDPOINT_ASYNC("DELETE", "/entry/{id}", deleteEntry) {
+  ENDPOINT_ASYNC("DELETE", "/entry/{id}", deleteEntryAsync) {
 
-    ENDPOINT_ASYNC_INIT(deleteEntry);
+    ENDPOINT_ASYNC_INIT(deleteEntryAsync);
 
     Action act() override {
       Int32 id = oatpp::utils::Conversion::strToInt32(request->getPathVariable("id")->c_str());
+
       controller->entryService.deleteEntryById(id);
       
       return _return(controller->createResponse(Status::CODE_204));
     }
   };
   
-  ENDPOINT_INFO(getAllEntries) {
+  ENDPOINT_INFO(getEntriesAsync) {
     info->summary = "Get multiple entries";
 
     info->addResponse<Object<PageDto<Object<EntryDto>>>>(Status::CODE_200, "application/json");
@@ -152,9 +152,9 @@ public:
     info->queryParams["limit"].description = "Max value of entries number per page (default 10)";
     info->queryParams["limit"].addExample("1", oatpp::Int32(20));
   }
-  ENDPOINT_ASYNC("GET", "/entries", getAllEntries) {
+  ENDPOINT_ASYNC("GET", "/entries", getEntriesAsync) {
 
-    ENDPOINT_ASYNC_INIT(getAllEntries);
+    ENDPOINT_ASYNC_INIT(getEntriesAsync);
 
      Action act() override {
       Int32 page = nullptr, limit = nullptr;

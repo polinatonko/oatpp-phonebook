@@ -1,9 +1,7 @@
 #include "ErrorHandler.hpp"
-#include "oatpp/base/Log.hpp"
 
 const char* ErrorHandler::getErrorMessage(const std::exception &ex, Status& status, Headers& headers)
 {
-    OATPP_LOGi("MyApp:EntryService", "{}", ex.what());
     try {
         std::rethrow_if_nested(ex);
     }
@@ -32,7 +30,7 @@ std::shared_ptr<ErrorHandler::OutgoingResponse> ErrorHandler::handleError(const 
     statusDto->status = status.description;
     statusDto->message = message;
 
-    auto response = ResponseFactory::createResponse(status, statusDto, m_objectMapper);
+    auto response = ResponseFactory::createResponse(status, statusDto, objectMapper);
     for (auto h: headers.getAll()) {
         response->putHeader(h.first.toString(), h.second.toString());
     }

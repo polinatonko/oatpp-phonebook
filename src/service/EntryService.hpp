@@ -16,6 +16,9 @@
 #define DEFAULT_LIMIT 10
 #define DEFAULT_PAGE_NUMBER 1
 
+/**
+ * Class which holds all API logic.
+ */
 class EntryService {
     typedef oatpp::web::protocol::http::Status Status;
     Validators::EntryValidator validator;    
@@ -24,7 +27,6 @@ class EntryService {
     void checkDbResult(const std::shared_ptr<oatpp::orm::QueryResult>& res);
 
 public:
-
     void validate(const oatpp::Object<EntryRequestDto>& dto);
     oatpp::Object<EntryDto> createEntry(const oatpp::Object<EntryRequestDto>& dto);
     oatpp::Object<EntryDto> updateEntry(const oatpp::Int32& id, const oatpp::Object<EntryRequestDto>& dto);

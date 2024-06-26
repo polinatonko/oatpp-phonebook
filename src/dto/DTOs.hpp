@@ -8,7 +8,7 @@
 #include OATPP_CODEGEN_BEGIN(DTO)
 
 /**
- * Entry request dto
+ * Entry request dto.
  */
 class EntryRequestDto : public oatpp::DTO {
   DTO_INIT(EntryRequestDto, DTO)
@@ -22,7 +22,7 @@ class EntryRequestDto : public oatpp::DTO {
 };
 
 /**
- * Entry dto
+ * Entry dto that stores in daatabase.
  */
 class EntryDto : public oatpp::DTO {
   DTO_INIT(EntryDto, DTO)
@@ -38,7 +38,7 @@ class EntryDto : public oatpp::DTO {
 
 
 /**
- * Dto to store page of entries
+ * Dto to store page of entries.
  */
 template<typename T>
 class PageDto : public oatpp::DTO {
@@ -58,7 +58,7 @@ class PageDto : public oatpp::DTO {
 };
 
 /**
- * API response status
+ * API response status dto.
  */
 class StatusDto : public oatpp::DTO {
 

@@ -35,9 +35,6 @@
 build/
 main/build/
 
-# test
-test/
-
 # idea
 .idea/
 cmake-build-debug/

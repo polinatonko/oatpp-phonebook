@@ -6,9 +6,16 @@
 
 #include OATPP_CODEGEN_BEGIN(DbClient)
 
+/**
+ * Entry database client.
+ */
 class EntryDb : public oatpp::orm::DbClient {
 public:
 
+    /**
+     * Constructor with orm executor.
+     * @param executor - orm::Executor used to execute db queries.
+     */
     EntryDb(const std::shared_ptr<oatpp::orm::Executor>& executor)
         : oatpp::orm::DbClient(executor)
     {
@@ -43,6 +50,7 @@ public:
         
     QUERY(deleteEntry,
         "DELETE FROM EntryDb WHERE id=:id;",
+        PREPARE(true),
         PARAM(oatpp::Int32, id))
 
     QUERY(getEntries,

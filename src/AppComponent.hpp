@@ -9,14 +9,22 @@
 
 #include "DbComponent.hpp"
 #include "SwaggerComponent.hpp"
+#include "config/Configuration.hpp"
 #include "errorHandler/ErrorHandler.hpp"
 
 /**
- *  Class which creates and holds Application components and registers components in oatpp::base::Environment
- *  Order of components initialization is from top to bottom
+ *  Class which creates and holds Application components and registers components in oatpp::base::Environment.
+ *  Order of components initialization is from top to bottom.
  */
 class AppComponent {
 public:
+  /**
+   * Config component
+   */
+  OATPP_CREATE_COMPONENT(std::shared_ptr<Configuration>, config) ([] {
+    return std::make_shared<Configuration>(CONFIG_PATH);
+  } ());
+
   /**
    * Db component
    */
@@ -31,7 +39,11 @@ public:
    *  Create ConnectionProvider component which listens on the port
    */
   OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::network::ServerConnectionProvider>, serverConnectionProvider)([] {
-    return oatpp::network::tcp::server::ConnectionProvider::createShared({"0.0.0.0", 8000, oatpp::network::Address::IP_4});
+    OATPP_COMPONENT(std::shared_ptr<Configuration>, config);
+
+    return oatpp::network::tcp::server::ConnectionProvider::createShared(
+      {config->serverAddress, config->serverPort, oatpp::network::Address::IP_4}
+    );
   }());
   
   /**
@@ -41,6 +53,9 @@ public:
     return oatpp::web::server::HttpRouter::createShared();
   }());
 
+  /**
+   * Create ContentMappers component
+   */
   OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::web::mime::ContentMappers>, apiContentMappers)([] {
 
     auto json = std::make_shared<oatpp::json::ObjectMapper>();
@@ -53,6 +68,19 @@ public:
     return mappers;
 
   }());
+
+  /**
+   * Create Async Executor
+   */
+  OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::async::Executor>, executor)([&] {
+    OATPP_COMPONENT(std::shared_ptr<Configuration>, config);
+
+    return std::make_shared<oatpp::async::Executor>(
+      config->dataThread, /* Data-Processing threads */
+      config->ioThread,  /* I/O threads */
+      config->timerThread /* Timer threads */
+    );
+  }());
   
   /**
    *  Create ConnectionHandler component which uses Router component to route requests;
@@ -61,8 +89,9 @@ public:
   OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::network::ConnectionHandler>, serverConnectionHandler)([] {
     OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, router); // get Router component
     OATPP_COMPONENT(std::shared_ptr<oatpp::web::mime::ContentMappers>, apiContentMappers); // get ContentMappers component
+    OATPP_COMPONENT(std::shared_ptr<oatpp::async::Executor>, executor); // get async Executor
 
-    auto connectionHandler = oatpp::web::server::AsyncHttpConnectionHandler::createShared(router);
+    auto connectionHandler = oatpp::web::server::AsyncHttpConnectionHandler::createShared(router, executor);
     connectionHandler->setErrorHandler(std::make_shared<ErrorHandler>(
       apiContentMappers->getMapper("application/json")
     ));

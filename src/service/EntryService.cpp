@@ -3,7 +3,12 @@
 void EntryService::checkDbResult(const std::shared_ptr<oatpp::orm::QueryResult> &res)
 {
     if (!res->isSuccess()) {
-        throw DbException(res->getErrorMessage()->c_str());
+        oatpp::String error = res->getErrorMessage();
+        char* msg = new char[error->size()];
+        for (int i = 0; i < error->size(); ++i) {
+            msg[i] = error->at(i);
+        }
+        throw DbException(msg);
     }   
 }
 
@@ -17,7 +22,7 @@ oatpp::Object<EntryDto> EntryService::createEntry(const oatpp::Object<EntryReque
     checkDbResult(dbResult);
 
     auto entryId = oatpp::sqlite::Utils::getLastInsertRowId(dbResult->getConnection());
-    OATPP_LOGi("MyApp:EntryService", "Create entry id={}", entryId);
+    OATPP_LOGd("Server:EntryService", "Create entry id={}", entryId);
 
     return getEntryById(entryId);
 }
@@ -26,7 +31,7 @@ oatpp::Object<EntryDto> EntryService::updateEntry(const oatpp::Int32& id, const 
     auto dbResult = entryDb->updateEntry(id, dto);
     checkDbResult(dbResult);
 
-    OATPP_LOGi("MyApp:EntryService", "Update entry id={}", id);
+    OATPP_LOGd("Server:EntryService", "Update entry id={}", id);
 
     return getEntryById(id);
 }
@@ -43,7 +48,7 @@ oatpp::Object<EntryDto> EntryService::getEntryById(const oatpp::Int32& id) {
         throw DbException("There are multiple entries with same id");
     }
 
-    OATPP_LOGi("MyApp:EntryService", "Get entry id={}", id);
+    OATPP_LOGd("Server:EntryService", "Get entry id={}", id);
 
     return result[0];
 }
@@ -52,7 +57,7 @@ void EntryService::deleteEntryById(const oatpp::Int32& id) {
     auto dbResult = entryDb->deleteEntry(id);
     checkDbResult(dbResult);
 
-    OATPP_LOGi("MyApp:EntryService", "Delete entry id={}", id);
+    OATPP_LOGd("Server:EntryService", "Delete entry id={}", id);
 }
 
 oatpp::Object<PageDto<oatpp::Object<EntryDto>>> EntryService::getEntries(oatpp::Int32& pageNumber, oatpp::Int32& limit) {

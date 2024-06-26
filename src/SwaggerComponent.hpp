@@ -7,16 +7,14 @@
 #include "oatpp/macro/component.hpp"
 
 /**
- *  Configure Swagger info and resources paths
+ *  Class which configures Swagger info and resources paths.
  */
 class SwaggerComponent {
 public:
-
     /**
      * General API docs info
      */
     OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::swagger::DocumentInfo>, swaggerDocumentInfo) ([] {
-
         oatpp::swagger::DocumentInfo::Builder builder;
         builder
         .setTitle("Phonebook service")
@@ -34,7 +32,6 @@ public:
      * Swagger UI resources
      */
     OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::swagger::Resources>, swaggerResources) ([] {
-
         return oatpp::swagger::Resources::loadResources(OATPP_SWAGGER_RES_PATH);
 
     } ());

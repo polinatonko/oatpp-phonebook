@@ -19,6 +19,7 @@ add_library(${project_name}-lib
         src/errorHandler/ErrorHandler.hpp 
         src/errorHandler/ErrorHandler.cpp
         src/errorHandler/Exception.hpp
+        src/config/Configuration.hpp
 )
 
 ## link libs
@@ -49,22 +50,31 @@ add_definitions(
 
         ## Path to database migration scripts
         -DDATABASE_MIGRATIONS="${CMAKE_CURRENT_SOURCE_DIR}/sql"
+
+        ## Config.json path
+        -DCONFIG_PATH="${CMAKE_CURRENT_SOURCE_DIR}/config.json"
 )
 
 ## add executables
 
 add_executable(${project_name}-exe
         src/App.cpp
-        test/app/MyApiTestClient.hpp)
+        test/app/TestClient.hpp)
 target_link_libraries(${project_name}-exe ${project_name}-lib)
 add_dependencies(${project_name}-exe ${project_name}-lib)
 
 add_executable(${project_name}-test
+        
         test/tests.cpp
+        test/GetEntryByIdCoroutine.hpp
+        test/GetEntriesCoroutine.hpp
+        test/UpdateEntryCoroutine.hpp
+        test/DeleteEntryCoroutine.hpp
+        test/CreateEntryCoroutine.hpp
         test/app/TestComponent.hpp
-        test/app/MyApiTestClient.hpp
-        test/MyControllerTest.cpp
-        test/MyControllerTest.hpp
+        test/app/TestClient.hpp
+        test/AsyncTest.hpp
+        test/LogicTest.hpp
 )
 
 target_link_libraries(${project_name}-test ${project_name}-lib)
