@@ -44,3 +44,5 @@ cmake-build-debug/
 
 **/.DS_Store
 
+# Db
+db.sqlite

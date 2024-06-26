@@ -2,6 +2,7 @@
 
 #include "oatpp/network/Server.hpp"
 #include "oatpp-swagger/AsyncController.hpp"
+#include "oatpp/base/Log.hpp"
 
 #include "./controller/MyController.hpp"
 #include "./AppComponent.hpp"

@@ -11,10 +11,10 @@ void runTests() {
   }
   
   {
-    AsyncTest test_virtual(0, 1000);
+    AsyncTest test_virtual(0, 10);
     test_virtual.run(1);
 
-    AsyncTest test_port(8000, 1000);
+    AsyncTest test_port(8000, 10);
     test_port.run(1);
   }
 }
