@@ -2,7 +2,7 @@
 
 Phonebook API built with Oat++, using oatpp ORM with SQLite and documented with Swagger and OpenApi 3.0.0.
 
-<img src="https://github.com/polinatonko/test/assets/124461190/6f0c7a2e-25f2-41da-9a51-333ce5284702" width="420"><img src="https://github.com/polinatonko/test/assets/124461190/d78061f3-c3e9-43ae-88f2-a01462e8b22e" width="390">
+<img src="https://github.com/user-attachments/assets/7330a2b8-2627-478f-8e33-11f4c3cabd7c" width="405"><img src="https://github.com/user-attachments/assets/1b4fb0a8-3bc3-4b3d-a685-37811a86f31f" width="405">
 
 ## Overview
 
